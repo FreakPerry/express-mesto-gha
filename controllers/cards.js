@@ -41,7 +41,10 @@ const likeCard = async (req, res) => {
     const updatedCard = await cardModel.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
     if (!updatedCard) {
       return res.status(404).send({ message: 'Card not found' });
@@ -57,7 +60,10 @@ const dislikeCard = async (req, res) => {
     const updatedCard = await cardModel.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user._id } },
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
     if (!updatedCard) {
       return res.status(404).send({ message: 'Card not found' });

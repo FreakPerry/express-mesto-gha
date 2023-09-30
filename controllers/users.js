@@ -44,7 +44,10 @@ const updateUserById = async (req, res) => {
     const updatedUser = await userModel.findByIdAndUpdate(
       req.user._id,
       { name, about },
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
     if (!updatedUser) {
       return res.status(404).send({ message: 'User not found' });
@@ -64,7 +67,10 @@ const updateUserAvatar = async (req, res) => {
     const updatedUser = await userModel.findByIdAndUpdate(
       req.user._id,
       { avatar },
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
     if (!updatedUser) {
       return res.status(404).send({ message: 'User not found' });
