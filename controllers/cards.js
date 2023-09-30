@@ -32,6 +32,9 @@ const deleteCard = async (req, res) => {
     }
     res.status(200).send({ message: 'card was deleted' });
   } catch (e) {
+    if (e instanceof mongoose.Error.CastError) {
+      return res.status(400).send({ message: e.message });
+    }
     res.status(500).send({ message: 'Server error' });
   }
 };
@@ -51,6 +54,9 @@ const likeCard = async (req, res) => {
     }
     return res.status(200).send(updatedCard);
   } catch (e) {
+    if (e instanceof mongoose.Error.CastError) {
+      return res.status(400).send({ message: e.message });
+    }
     return res.status(500).send({ message: 'Server error' });
   }
 };
@@ -70,6 +76,9 @@ const dislikeCard = async (req, res) => {
     }
     return res.status(200).send(updatedCard);
   } catch (e) {
+    if (e instanceof mongoose.Error.CastError) {
+      return res.status(400).send({ message: e.message });
+    }
     return res.status(500).send({ message: 'Server error' });
   }
 };
