@@ -1,12 +1,22 @@
 const mongoose = require('mongoose');
 const cardModel = require('../models/card');
 
+const {
+  OK,
+  CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  ITERNAL_SERVER_ERRROR,
+} = require('../utils/constants');
+
 const getCards = async (req, res) => {
   try {
-    const cards = await cardModel.find();
-    res.status(200).send(cards);
+    const cards = await cardModel
+      .find()
+      .orFail(() => new Error('Cards not found'));
+    res.status(OK).send(cards);
   } catch (e) {
-    res.status(500).send({ message: 'Server error' });
+    res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 
@@ -14,72 +24,78 @@ const createCard = async (req, res) => {
   const { name, link } = req.body;
   try {
     const card = await cardModel.create({ name, link, owner: req.user._id });
-    res.status(201).send(card);
+    res.status(CREATED).send(card);
   } catch (e) {
     if (e instanceof mongoose.Error.ValidationError) {
-      return res.status(400).send({ message: e.message });
+      return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    return res.status(500).send({ message: 'Server error' });
+    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 
 const deleteCard = async (req, res) => {
   try {
     const { cardId } = req.params;
-    const card = await cardModel.findByIdAndDelete(cardId);
+    const card = await cardModel
+      .findByIdAndDelete(cardId)
+      .orFail(() => new Error('Card not found'));
     if (!card) {
-      return res.status(404).send({ message: 'Card not found' });
+      return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
-    res.status(200).send({ message: 'card was deleted' });
+    res.status(OK).send({ message: 'card was deleted' });
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
-      return res.status(400).send({ message: e.message });
+      return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    res.status(500).send({ message: 'Server error' });
+    res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 
 const likeCard = async (req, res) => {
   try {
-    const updatedCard = await cardModel.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
+    const updatedCard = await cardModel
+      .findByIdAndUpdate(
+        req.params.cardId,
+        { $addToSet: { likes: req.user._id } },
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
+      .orFail(() => new Error('Card not Found'));
     if (!updatedCard) {
-      return res.status(404).send({ message: 'Card not found' });
+      return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
-    return res.status(200).send(updatedCard);
+    return res.status(OK).send(updatedCard);
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
-      return res.status(400).send({ message: e.message });
+      return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    return res.status(500).send({ message: 'Server error' });
+    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 
 const dislikeCard = async (req, res) => {
   try {
-    const updatedCard = await cardModel.findByIdAndUpdate(
-      req.params.cardId,
-      { $pull: { likes: req.user._id } },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
+    const updatedCard = await cardModel
+      .findByIdAndUpdate(
+        req.params.cardId,
+        { $pull: { likes: req.user._id } },
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
+      .orFail(() => new Error('Card not found'));
     if (!updatedCard) {
-      return res.status(404).send({ message: 'Card not found' });
+      return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
-    return res.status(200).send(updatedCard);
+    return res.status(OK).send(updatedCard);
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
-      return res.status(400).send({ message: e.message });
+      return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    return res.status(500).send({ message: 'Server error' });
+    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 

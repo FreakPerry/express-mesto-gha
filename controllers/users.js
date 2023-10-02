@@ -1,88 +1,82 @@
 const mongoose = require('mongoose');
 const userModel = require('../models/user');
 
+const {
+  OK,
+  CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  ITERNAL_SERVER_ERRROR,
+} = require('../utils/constants');
+
 const createUser = async (req, res) => {
   try {
     const user = await userModel.create(req.body);
-    return res.status(201).send(user);
+    return res.status(CREATED).send(user);
   } catch (e) {
     if (e instanceof mongoose.Error.ValidationError) {
-      return res.status(400).send({ message: e.message });
+      return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    return res.status(500).send({ message: 'Server error' });
+    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 
 const getUsers = async (req, res) => {
   try {
-    const users = await userModel.find({});
-    return res.status(200).send(users);
+    const users = await userModel
+      .find({})
+      .orFail(() => new Error('No users found'));
+    return res.status(OK).send(users);
   } catch (e) {
-    return res.status(500).send({ message: 'Server error' });
+    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 
 const getUserById = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await userModel.findById(userId);
+    const user = await userModel
+      .findById(userId)
+      .orFail(() => new Error('User is not found'));
     if (!user) {
-      return res.status(404).send({ message: 'User not found' });
+      return res.status(NOT_FOUND).send({ message: 'User not found' });
     }
-    return res.status(200).send(user);
+    return res.status(OK).send(user);
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
-      return res.status(400).send({ message: e.message });
+      return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    return res.status(500).send({ message: 'Server error' });
+    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 
-const updateUserById = async (req, res) => {
+const updateUser = async (req, res) => {
   try {
-    const { name, about } = req.body;
-    const updatedUser = await userModel.findByIdAndUpdate(
-      req.user._id,
-      { name, about },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
+    const { name, about, avatar } = req.body;
+    const updatedUser = await userModel
+      .findByIdAndUpdate(
+        req.user._id,
+        { name, about, avatar },
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
+      .orFail(() => new Error('User is not found'));
     if (!updatedUser) {
-      return res.status(404).send({ message: 'User not found' });
+      return res.status(NOT_FOUND).send({ message: 'User not found' });
     }
-    res.status(200).send(updatedUser);
+    res.status(OK).send(updatedUser);
   } catch (e) {
     if (e instanceof mongoose.Error.ValidationError) {
-      return res.status(400).send({ message: e.message });
+      return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    res.status(500).send({ message: 'Server error' });
+    res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
 
-const updateUserAvatar = async (req, res) => {
-  const { avatar } = req.body;
-  try {
-    const updatedUser = await userModel.findByIdAndUpdate(
-      req.user._id,
-      { avatar },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
-    if (!updatedUser) {
-      return res.status(404).send({ message: 'User not found' });
-    }
-    return res.status(200).send(updatedUser);
-  } catch (e) {
-    if (e instanceof mongoose.Error.ValidationError) {
-      return res.status(400).send({ message: e.message });
-    }
-    return res.status(500).send({ message: 'Server error' });
-  }
-};
+const updateUserById = updateUser;
+const updateUserAvatar = updateUser;
 
 module.exports = {
   createUser,
