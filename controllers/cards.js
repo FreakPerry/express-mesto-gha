@@ -14,9 +14,6 @@ const getCards = async (req, res) => {
     const cards = await cardModel.find();
     res.status(OK).send(cards);
   } catch (e) {
-    // if (e instanceof mongoose.Error.DocumentNotFoundError) {
-    //   return res.status(NOT_FOUND).send({ message: 'Cards not found' });
-    // }
     res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
