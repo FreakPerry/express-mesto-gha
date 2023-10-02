@@ -36,16 +36,14 @@ const createCard = async (req, res) => {
 const deleteCard = async (req, res) => {
   try {
     const { cardId } = req.params;
-    const card = await cardModel
-      .findByIdAndDelete(cardId)
-      .orFail(() => new Error('Card not found'));
-    if (!card) {
-      return res.status(NOT_FOUND).send({ message: 'Card not found' });
-    }
+    await cardModel.findByIdAndRemove(cardId).orFail();
     res.status(OK).send({ message: 'card was deleted' });
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
+    }
+    if (e.name === 'DocumentNotFoundError') {
+      return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
     res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
@@ -62,14 +60,14 @@ const likeCard = async (req, res) => {
           runValidators: true,
         },
       )
-      .orFail(() => new Error('Card not Found'));
-    if (!updatedCard) {
-      return res.status(NOT_FOUND).send({ message: 'Card not found' });
-    }
+      .orFail();
     return res.status(OK).send(updatedCard);
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
+    }
+    if (e.name === 'DocumentNotFoundError') {
+      return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
     return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
@@ -86,14 +84,14 @@ const dislikeCard = async (req, res) => {
           runValidators: true,
         },
       )
-      .orFail(() => new Error('Card not found'));
-    if (!updatedCard) {
-      return res.status(NOT_FOUND).send({ message: 'Card not found' });
-    }
+      .orFail();
     return res.status(OK).send(updatedCard);
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
+    }
+    if (e.name === 'DocumentNotFoundError') {
+      return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
     return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }

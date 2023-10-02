@@ -23,11 +23,12 @@ const createUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const users = await userModel
-      .find({})
-      .orFail(() => new Error('No users found'));
+    const users = await userModel.find({}).orFail();
     return res.status(OK).send(users);
   } catch (e) {
+    if (e.name === 'DocumentNotFoundError') {
+      return res.status(NOT_FOUND).send({ message: 'Users list is not found' });
+    }
     return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
@@ -35,16 +36,14 @@ const getUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await userModel
-      .findById(userId)
-      .orFail(() => new Error('User is not found'));
-    if (!user) {
-      return res.status(NOT_FOUND).send({ message: 'User not found' });
-    }
+    const user = await userModel.findById(userId).orFail();
     return res.status(OK).send(user);
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
+    }
+    if (e.name === 'DocumentNotFoundError') {
+      return res.status(NOT_FOUND).send({ message: 'User is not found' });
     }
     return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
@@ -62,14 +61,14 @@ const updateUser = async (req, res) => {
           runValidators: true,
         },
       )
-      .orFail(() => new Error('User is not found'));
-    if (!updatedUser) {
-      return res.status(NOT_FOUND).send({ message: 'User not found' });
-    }
+      .orFail();
     res.status(OK).send(updatedUser);
   } catch (e) {
     if (e instanceof mongoose.Error.ValidationError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
+    }
+    if (e.name === 'DocumentNotFoundError') {
+      return res.send(NOT_FOUND).send({ message: 'User is not found' });
     }
     res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
