@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const appRouter = require('./routes/index');
+const { NOT_FOUND } = require('./utils/constants');
 
 const app = express();
 const port = 3000;
@@ -27,7 +28,7 @@ app.use((req, res, next) => {
 });
 app.use(appRouter);
 app.use('*', (req, res) => {
-  res.status(404).send({
+  res.status(NOT_FOUND).send({
     message: 'The requested page was not found',
   });
 });

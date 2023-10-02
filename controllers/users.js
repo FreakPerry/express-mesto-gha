@@ -49,18 +49,13 @@ const getUserById = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, updateData) => {
   try {
-    const { name, about, avatar } = req.body;
     const updatedUser = await userModel
-      .findByIdAndUpdate(
-        req.user._id,
-        { name, about, avatar },
-        {
-          new: true,
-          runValidators: true,
-        },
-      )
+      .findByIdAndUpdate(req.user._id, updateData, {
+        new: true,
+        runValidators: true,
+      })
       .orFail();
     res.status(OK).send(updatedUser);
   } catch (e) {
@@ -74,8 +69,16 @@ const updateUser = async (req, res) => {
   }
 };
 
-const updateUserById = updateUser;
-const updateUserAvatar = updateUser;
+const updateUserById = async (req, res) => {
+  const { name, about } = req.body;
+  const updateData = { name, about };
+  updateUser(req, res, updateData);
+};
+const updateUserAvatar = async (req, res) => {
+  const { avatar } = req.body;
+  const updateData = { avatar };
+  updateUser(req, res, updateData);
+};
 
 module.exports = {
   createUser,
