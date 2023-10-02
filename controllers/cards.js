@@ -11,11 +11,12 @@ const {
 
 const getCards = async (req, res) => {
   try {
-    const cards = await cardModel
-      .find()
-      .orFail(() => new Error('Cards not found'));
+    const cards = await cardModel.find().orFail();
     res.status(OK).send(cards);
   } catch (e) {
+    if (e instanceof mongoose.Error.DocumentNotFoundError) {
+      return res.status(NOT_FOUND).send({ message: 'Cards not found' });
+    }
     res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
   }
 };
@@ -42,7 +43,7 @@ const deleteCard = async (req, res) => {
     if (e instanceof mongoose.Error.CastError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    if (e.name === 'DocumentNotFoundError') {
+    if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
     res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
@@ -66,7 +67,7 @@ const likeCard = async (req, res) => {
     if (e instanceof mongoose.Error.CastError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    if (e.name === 'DocumentNotFoundError') {
+    if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
     return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
@@ -90,7 +91,7 @@ const dislikeCard = async (req, res) => {
     if (e instanceof mongoose.Error.CastError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    if (e.name === 'DocumentNotFoundError') {
+    if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
     return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });

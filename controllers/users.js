@@ -26,7 +26,7 @@ const getUsers = async (req, res) => {
     const users = await userModel.find({}).orFail();
     return res.status(OK).send(users);
   } catch (e) {
-    if (e.name === 'DocumentNotFoundError') {
+    if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'Users list is not found' });
     }
     return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
@@ -42,7 +42,7 @@ const getUserById = async (req, res) => {
     if (e instanceof mongoose.Error.CastError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    if (e.name === 'DocumentNotFoundError') {
+    if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'User is not found' });
     }
     return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
@@ -67,7 +67,7 @@ const updateUser = async (req, res) => {
     if (e instanceof mongoose.Error.ValidationError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    if (e.name === 'DocumentNotFoundError') {
+    if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.send(NOT_FOUND).send({ message: 'User is not found' });
     }
     res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
