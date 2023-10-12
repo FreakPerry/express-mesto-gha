@@ -26,7 +26,10 @@ const createUser = async (req, res, next) => {
       password: hash,
     });
 
-    return res.status(CREATED).send(user);
+    const userWithoutPassword = { ...user._doc };
+    delete userWithoutPassword.password;
+
+    return res.status(CREATED).send(userWithoutPassword);
   } catch (e) {
     if (e.code === 11000) {
       return res
