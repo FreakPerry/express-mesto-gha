@@ -5,6 +5,7 @@ const CREATED = http2.constants.HTTP_STATUS_CREATED;
 const BAD_REQUEST = http2.constants.HTTP_STATUS_BAD_REQUEST;
 const NOT_FOUND = http2.constants.HTTP_STATUS_NOT_FOUND;
 const ITERNAL_SERVER_ERRROR = http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;
+const UNAUTHORIZED = http2.constants.UNAUTHORIZED;
 
 module.exports = {
   OK,
@@ -12,4 +13,5 @@ module.exports = {
   BAD_REQUEST,
   NOT_FOUND,
   ITERNAL_SERVER_ERRROR,
+  UNAUTHORIZED,
 };

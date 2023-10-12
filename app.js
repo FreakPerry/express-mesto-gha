@@ -6,6 +6,11 @@ const appRouter = require('./routes/index');
 const { NOT_FOUND } = require('./utils/constants');
 const { login, createUser } = require('./controllers/users');
 const error = require('./middlewares/error');
+const authMiddleware = require('./middlewares/auth');
+const {
+  loginValidator,
+  registerValidator,
+} = require('./utils/validators/userValidator');
 
 const app = express();
 app.use(cookieParser());
@@ -25,9 +30,10 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', loginValidator, login);
+app.post('/signup', registerValidator, createUser);
 
+app.use(authMiddleware);
 app.use(appRouter);
 
 app.use('*', (req, res) => {

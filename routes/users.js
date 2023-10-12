@@ -6,11 +6,16 @@ const {
   updateUserAvatar,
   getMe,
 } = require('../controllers/users');
+const {
+  userInfoValidator,
+  avatarValidator,
+  userIdValidator,
+} = require('../utils/validators/userValidator');
 
 router.get('/me', getMe);
 router.get('/', getUsers);
-router.patch('/me', updateUserById);
-router.patch('/me/avatar', updateUserAvatar);
-router.get('/:userId', getUserById);
+router.patch('/me', userInfoValidator, updateUserById);
+router.patch('/me/avatar', avatarValidator, updateUserAvatar);
+router.get('/:userId', userIdValidator, getUserById);
 
 module.exports = router;

@@ -6,10 +6,12 @@
     "no-underscore-dangle": [
       "error",
       {
-        "allow": ["_id"]
+        "allow": ["_id"],
+        "allow": ["_doc"]
       }
     ],
-    "object-curly-newline": ["error", { "consistent": true }]
+    "object-curly-newline": ["error", { "consistent": true }],
+    "implicit-arrow-linebreak": "off"
   },
   "env": {
     "node": true,

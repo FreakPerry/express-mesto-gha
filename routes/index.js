@@ -4,7 +4,7 @@ const usersRouter = require('./users');
 const cardsRouter = require('./cards');
 const authMiddleware = require('../middlewares/auth');
 
-router.use('/users', authMiddleware, usersRouter);
-router.use('/cards', authMiddleware, cardsRouter);
+router.use('/users', usersRouter);
+router.use('/cards', cardsRouter);
 
 module.exports = router;

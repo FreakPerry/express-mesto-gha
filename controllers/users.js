@@ -11,6 +11,7 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   ITERNAL_SERVER_ERRROR,
+  UNAUTHORIZED,
 } = require('../utils/constants');
 
 const createUser = async (req, res, next) => {
@@ -54,6 +55,12 @@ const login = async (req, res, next) => {
       .status(OK)
       .send({ token });
   } catch (e) {
+    console.log(e);
+    if (e.message === 'Неверная почта или пароль') {
+      return res
+        .status(UNAUTHORIZED)
+        .send({ message: 'Неверная почта или пароль' });
+    }
     next(e);
   }
 };
