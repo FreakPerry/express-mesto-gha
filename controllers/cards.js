@@ -9,16 +9,16 @@ const {
   ITERNAL_SERVER_ERRROR,
 } = require('../utils/constants');
 
-const getCards = async (req, res) => {
+const getCards = async (req, res, next) => {
   try {
     const cards = await cardModel.find();
     res.status(OK).send(cards);
   } catch (e) {
-    res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
+    next(e);
   }
 };
 
-const createCard = async (req, res) => {
+const createCard = async (req, res, next) => {
   const { name, link } = req.body;
   try {
     const card = await cardModel.create({ name, link, owner: req.user._id });
@@ -27,11 +27,11 @@ const createCard = async (req, res) => {
     if (e instanceof mongoose.Error.ValidationError) {
       return res.status(BAD_REQUEST).send({ message: e.message });
     }
-    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
+    next(e);
   }
 };
 
-const deleteCard = async (req, res) => {
+const deleteCard = async (req, res, next) => {
   try {
     const { cardId } = req.params;
     const card = await cardModel.findByIdAndRemove(cardId).orFail();
@@ -48,11 +48,11 @@ const deleteCard = async (req, res) => {
     if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
-    res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
+    next(e);
   }
 };
 
-const likeCard = async (req, res) => {
+const likeCard = async (req, res, next) => {
   try {
     const updatedCard = await cardModel
       .findByIdAndUpdate(
@@ -72,11 +72,11 @@ const likeCard = async (req, res) => {
     if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
-    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
+    next(e);
   }
 };
 
-const dislikeCard = async (req, res) => {
+const dislikeCard = async (req, res, next) => {
   try {
     const updatedCard = await cardModel
       .findByIdAndUpdate(
@@ -96,7 +96,7 @@ const dislikeCard = async (req, res) => {
     if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'Card not found' });
     }
-    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
+    next(e);
   }
 };
 

@@ -4,10 +4,10 @@ const {
   getUsers,
   updateUserById,
   updateUserAvatar,
-  getMeTest,
+  getMe,
 } = require('../controllers/users');
 
-router.get('/me', getMeTest);
+router.get('/me', getMe);
 router.get('/', getUsers);
 router.patch('/me', updateUserById);
 router.patch('/me/avatar', updateUserAvatar);
