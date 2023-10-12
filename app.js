@@ -12,13 +12,13 @@ const {
   loginValidator,
   registerValidator,
 } = require('./utils/validators/userValidator');
+const { DATABASE_URL, PORT } = require('./utils/config');
 
 const app = express();
 app.use(cookieParser());
-const port = 3000;
 
 mongoose
-  .connect('mongodb://127.0.0.1:27017/mestodb', {
+  .connect(DATABASE_URL, {
     useNewUrlParser: true,
   })
   .then(() => {
@@ -46,6 +46,6 @@ app.use('*', (req, res) => {
 app.use(errors());
 app.use(error);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

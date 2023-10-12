@@ -12,6 +12,7 @@ const {
   NOT_FOUND,
   ITERNAL_SERVER_ERRROR,
   UNAUTHORIZED,
+  CONFLICT,
 } = require('../utils/constants');
 
 const createUser = async (req, res, next) => {
@@ -33,7 +34,7 @@ const createUser = async (req, res, next) => {
   } catch (e) {
     if (e.code === 11000) {
       return res
-        .status(409)
+        .status(CONFLICT)
         .send({ message: 'User with this email already exists' });
     }
     if (e instanceof mongoose.Error.ValidationError) {
@@ -76,8 +77,7 @@ const getUsers = async (req, res, next) => {
     if (e instanceof mongoose.Error.DocumentNotFoundError) {
       return res.status(NOT_FOUND).send({ message: 'Users list is not found' });
     }
-
-    return res.status(ITERNAL_SERVER_ERRROR).send({ message: 'Server error' });
+    next(e);
   }
 };
 
@@ -134,7 +134,7 @@ const getMe = async (req, res, next) => {
     const user = await userModel.findOne({ _id: req.user._id });
     res.status(OK).send(user);
   } catch (e) {
-    res.status(404).send({ message: 'user not found' });
+    res.status(NOT_FOUND).send({ message: 'user not found' });
     next(e);
   }
 };

@@ -37,7 +37,7 @@ const deleteCard = async (req, res, next) => {
     const card = await cardModel.findByIdAndRemove(cardId).orFail();
     if (card.owner.toString() !== cardId) {
       return res
-        .status(404)
+        .status(NOT_FOUND)
         .send({ message: "You can't delete other people's cards" });
     }
     res.status(OK).send({ message: 'card was deleted' });
