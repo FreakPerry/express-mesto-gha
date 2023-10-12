@@ -6,6 +6,7 @@ const appRouter = require('./routes/index');
 const { NOT_FOUND } = require('./utils/constants');
 const { login, createUser } = require('./controllers/users');
 const error = require('./middlewares/error');
+const { errors } = require('celebrate');
 const authMiddleware = require('./middlewares/auth');
 const {
   loginValidator,
@@ -42,6 +43,7 @@ app.use('*', (req, res) => {
   });
 });
 
+app.use(errors());
 app.use(error);
 
 app.listen(port, () => {

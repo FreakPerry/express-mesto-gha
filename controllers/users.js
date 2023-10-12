@@ -55,7 +55,6 @@ const login = async (req, res, next) => {
       .status(OK)
       .send({ token });
   } catch (e) {
-    console.log(e);
     if (e.message === 'Неверная почта или пароль') {
       return res
         .status(UNAUTHORIZED)
