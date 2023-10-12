@@ -1,9 +1,14 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const appRouter = require('./routes/index');
 const { NOT_FOUND } = require('./utils/constants');
+const { login, createUser } = require('./controllers/users');
+const error = require('./middlewares/error');
 
 const app = express();
+app.use(cookieParser());
 const port = 3000;
 
 mongoose
@@ -19,19 +24,19 @@ mongoose
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = {
-    _id: '65155526cdffa84145d3fb37',
-  };
 
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
+
 app.use(appRouter);
+
 app.use('*', (req, res) => {
   res.status(NOT_FOUND).send({
     message: 'The requested page was not found',
   });
 });
+
+app.use(error);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

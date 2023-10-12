@@ -34,7 +34,12 @@ const createCard = async (req, res) => {
 const deleteCard = async (req, res) => {
   try {
     const { cardId } = req.params;
-    await cardModel.findByIdAndRemove(cardId).orFail();
+    const card = await cardModel.findByIdAndRemove(cardId).orFail();
+    if (card.owner.toString() !== cardId) {
+      return res
+        .status(404)
+        .send({ message: "You can't delete other people's cards" });
+    }
     res.status(OK).send({ message: 'card was deleted' });
   } catch (e) {
     if (e instanceof mongoose.Error.CastError) {
